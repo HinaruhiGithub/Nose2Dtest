@@ -37,7 +37,7 @@ export const PARAMS = {
     // うつ伏せ時の左右移動速度
     walkSpeedProne: 110,
     // ジャンプの初速(天井にぎりぎりぶつからない程度に調整する)
-    jumpVelocity: 460,
+    jumpVelocity: 420,
     // 空中での左右移動の効き(1で地上と同じ)
     airControl: 0.6,
     // 鼻毛に掴まれる距離
