@@ -13,6 +13,7 @@ import { LABEL_CEILING, LABEL_END_WALL, LABEL_FLOOR } from '../game/NoseCave';
 import { Plush } from '../game/Plush';
 import { HUD } from '../ui/HUD';
 import { ResultOverlay } from '../ui/ResultOverlay';
+import { isTouchDevice, TouchControls } from '../ui/TouchControls';
 import { TitleScene } from './TitleScene';
 
 const FIXED_DT = 1 / 60;
@@ -36,6 +37,7 @@ export class GameScene implements Scene {
   private manager!: SceneManager;
   private state: 'playing' | 'cleared' | 'gameover' = 'playing';
   private overlay: ResultOverlay | null = null;
+  private touchControls: TouchControls | null = null;
   private screen = { w: 0, h: 0 };
 
   private faceAngle = 0;
@@ -68,6 +70,11 @@ export class GameScene implements Scene {
     this.viewRotator.addChild(this.world);
     this.container.addChild(this.viewRotator);
     this.container.addChild(this.hud.view);
+
+    if (isTouchDevice()) {
+      this.touchControls = new TouchControls(this.input);
+      this.container.addChild(this.touchControls.view);
+    }
 
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
 
@@ -309,5 +316,6 @@ export class GameScene implements Scene {
     this.baseCenter = { x: width / 2, y: height / 2 };
     this.viewRotator.position.set(width / 2, height / 2);
     this.overlay?.resize(width, height);
+    this.touchControls?.resize(width, height);
   }
 }
