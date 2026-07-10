@@ -1,0 +1,35 @@
+{
+  "name": "nose2d",
+  "version": "1.0.0",
+  "description": "",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HinaruhiGithub/Nose2Dtest.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/HinaruhiGithub/Nose2Dtest/issues"
+  },
+  "homepage": "https://github.com/HinaruhiGithub/Nose2Dtest#readme",
+  "dependencies": {
+    "matter-js": "^0.20.0",
+    "pixi.js": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.20.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4"
+  }
+}
