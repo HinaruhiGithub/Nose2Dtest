@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js';
 import { SceneManager } from './core/SceneManager';
-import { GameScene } from './scenes/GameScene';
+import { TitleScene } from './scenes/TitleScene';
 
 async function boot(): Promise<void> {
   const app = new Application();
@@ -14,7 +14,7 @@ async function boot(): Promise<void> {
   document.getElementById('app')!.appendChild(app.canvas);
 
   const manager = new SceneManager(app);
-  await manager.goto(new GameScene());
+  await manager.goto(new TitleScene());
 }
 
 void boot();

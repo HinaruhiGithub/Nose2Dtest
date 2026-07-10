@@ -15,6 +15,8 @@ export class Player {
   facing: 1 | -1 = 1;
   grounded = false;
   hanging = false;
+  // ぬいぐるみを引っこ抜いている最中
+  pulling = false;
 
   private engine: Engine;
   private moveX = 0;
@@ -85,9 +87,12 @@ export class Player {
   physicsStep(): void {
     const p = PARAMS.player;
 
-    if (this.hanging) {
+    if (this.hanging || this.pulling) {
       this.wantJump = false;
       this.wantProneToggle = false;
+      if (this.pulling && this.grounded) {
+        Body.setVelocity(this.body, { x: 0, y: this.body.velocity.y });
+      }
       return;
     }
 

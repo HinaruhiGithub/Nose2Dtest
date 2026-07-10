@@ -10,7 +10,10 @@ import { Player } from '../game/Player';
 import { PlayerAvatar } from '../game/PlayerAvatar';
 import { SneezeSystem } from '../game/SneezeSystem';
 import { LABEL_CEILING, LABEL_END_WALL, LABEL_FLOOR } from '../game/NoseCave';
+import { Plush } from '../game/Plush';
 import { HUD } from '../ui/HUD';
+import { ResultOverlay } from '../ui/ResultOverlay';
+import { TitleScene } from './TitleScene';
 
 const FIXED_DT = 1 / 60;
 
@@ -29,6 +32,11 @@ export class GameScene implements Scene {
   private hairField!: NoseHairField;
   private grabbedHair: NoseHair | null = null;
   private pendingPluck = false;
+  private plush!: Plush;
+  private manager!: SceneManager;
+  private state: 'playing' | 'cleared' | 'gameover' = 'playing';
+  private overlay: ResultOverlay | null = null;
+  private screen = { w: 0, h: 0 };
 
   private faceAngle = 0;
   private time = 0;
@@ -36,12 +44,17 @@ export class GameScene implements Scene {
   private camera = { x: 0, y: 0 };
   private baseCenter = { x: 0, y: 0 };
 
-  enter(_manager: SceneManager): void {
+  enter(manager: SceneManager): void {
+    this.manager = manager;
     this.engine = Engine.create();
     this.engine.gravity.y = PARAMS.world.gravityY;
 
     this.cave = new NoseCave(this.engine, generateCave());
     this.world.addChild(this.cave.view);
+
+    const plushX = this.cave.shape.length - 90;
+    this.plush = new Plush(plushX, this.cave.shape.centerYAt(plushX) + 6);
+    this.world.addChild(this.plush.view);
 
     this.hairField = new NoseHairField(this.cave.shape);
     this.world.addChild(this.hairField.view);
@@ -93,10 +106,29 @@ export class GameScene implements Scene {
     this.engine.gravity.x = Math.sin(this.faceAngle) * gy;
     this.engine.gravity.y = Math.cos(this.faceAngle) * gy;
 
-    this.player.readFrameInput(this.input);
-    this.handleGrabInput();
-    // デバッグ用: Tキーでメーターを満タンにする
-    if (this.input.consumePressed('debugTickle')) this.sneeze.fillTickle();
+    if (this.state === 'playing') {
+      this.player.readFrameInput(this.input);
+      this.handleGrabInput();
+      // デバッグ用: Tキーでメーターを満タンにする
+      if (this.input.consumePressed('debugTickle')) this.sneeze.fillTickle();
+    }
+
+    // ぬいぐるみの引っこ抜き
+    if (this.state === 'playing' && this.player.pulling) {
+      this.sneeze.addTickle(PARAMS.plush.tickleRisePerSec * dtSec);
+      if (this.plush.pull(dtSec)) {
+        this.player.pulling = false;
+        this.state = 'cleared';
+        this.showResult('ゲームクリア!', 0xffe08a);
+      }
+    }
+    this.plush.update(dtSec, this.player.pulling);
+
+    // 鼻の入り口から外に出たらゲームオーバー
+    if (this.state === 'playing' && this.player.body.position.x < 0) {
+      this.state = 'gameover';
+      this.showResult('ゲームオーバー', 0xff8a8a);
+    }
 
     this.accumulator += dtSec;
     while (this.accumulator >= FIXED_DT) {
@@ -107,7 +139,12 @@ export class GameScene implements Scene {
       this.player.updateGrounded();
 
       // 歩行による刺激
-      if (this.player.grounded && !this.player.hanging) {
+      if (
+        this.state === 'playing' &&
+        this.player.grounded &&
+        !this.player.hanging &&
+        !this.player.pulling
+      ) {
         const distPx = Math.abs(this.player.body.velocity.x);
         if (distPx > 0.2) {
           const perPx =
@@ -132,7 +169,7 @@ export class GameScene implements Scene {
     this.avatar.update(dtSec, {
       state: this.player.state,
       grounded: this.player.grounded,
-      hanging: this.player.hanging,
+      hanging: this.player.hanging || this.player.pulling,
       vx: this.player.body.velocity.x * 60,
       vy: this.player.body.velocity.y * 60,
       facing: this.player.facing,
@@ -188,6 +225,10 @@ export class GameScene implements Scene {
 
   private handleGrabInput(): void {
     if (!this.input.consumePressed('grab')) return;
+    if (this.player.pulling) {
+      this.player.pulling = false;
+      return;
+    }
     if (this.grabbedHair) {
       this.releaseHair();
       return;
@@ -201,7 +242,26 @@ export class GameScene implements Scene {
       this.grabbedHair = hair;
       this.player.hanging = true;
       hair.addTipImpulse(this.player.body.velocity.x, this.player.body.velocity.y);
+      return;
     }
+    const dToPlush = Math.hypot(
+      this.plush.x - this.player.body.position.x,
+      this.plush.y - this.player.body.position.y,
+    );
+    if (dToPlush < PARAMS.plush.grabRange && this.plush.durability > 0) {
+      this.player.pulling = true;
+    }
+  }
+
+  private showResult(title: string, titleColor: number): void {
+    this.overlay = new ResultOverlay({
+      title,
+      titleColor,
+      onRetry: () => void this.manager.goto(new GameScene()),
+      onTitle: () => void this.manager.goto(new TitleScene()),
+    });
+    this.overlay.resize(this.screen.w, this.screen.h);
+    this.container.addChild(this.overlay.view);
   }
 
   private releaseHair(): void {
@@ -245,7 +305,9 @@ export class GameScene implements Scene {
   }
 
   resize(width: number, height: number): void {
+    this.screen = { w: width, h: height };
     this.baseCenter = { x: width / 2, y: height / 2 };
     this.viewRotator.position.set(width / 2, height / 2);
+    this.overlay?.resize(width, height);
   }
 }
