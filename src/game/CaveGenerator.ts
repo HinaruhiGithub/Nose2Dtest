@@ -14,7 +14,7 @@ export interface CaveShape {
 }
 
 // 地形を毎回同じ形にするための固定シード付き乱数
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
     a |= 0;

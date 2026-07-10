@@ -42,6 +42,8 @@ export const PARAMS = {
     airControl: 0.6,
     // 鼻毛に掴まれる距離
     grabRange: 70,
+    // ぶら下がり時の毛先から体の中心までの距離
+    hangOffset: 26,
   },
 
   tickle: {
@@ -54,6 +56,8 @@ export const PARAMS = {
     // 壁・天井への衝突1回あたりの増加量(衝突速度に比例して加算)
     bumpBase: 0.02,
     bumpPerSpeed: 0.0002,
+    // これ未満の速度の接触は衝突として数えない(px/秒)
+    bumpMinSpeed: 140,
   },
 
   noseHair: {
@@ -73,6 +77,8 @@ export const PARAMS = {
     stiffness: 0.06,
     // ばねの減衰
     damping: 0.9,
+    // ぶら下がり時に毛先へかかる重さ(たわみの強さ)
+    hangWeight: 0.4,
   },
 
   sneeze: {
@@ -84,6 +90,8 @@ export const PARAMS = {
     breathAngleStep: 0.06,
     // 大くしゃみで主人公に加わる入り口方向の速度
     blowSpeed: 1400,
+    // 吹き飛ばし直後に主人公の操作が効かなくなる時間
+    controlLockSec: 0.6,
     // 大くしゃみ後にメーター運用を再開するまでの時間
     recoverSec: 1.0,
   },

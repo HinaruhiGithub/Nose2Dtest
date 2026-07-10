@@ -1,4 +1,4 @@
-export type Action = 'jump' | 'prone' | 'grab';
+export type Action = 'jump' | 'prone' | 'grab' | 'debugTickle';
 
 const KEY_TO_ACTION: Record<string, Action> = {
   Space: 'jump',
@@ -8,6 +8,7 @@ const KEY_TO_ACTION: Record<string, Action> = {
   KeyS: 'prone',
   KeyE: 'grab',
   KeyF: 'grab',
+  KeyT: 'debugTickle',
 };
 
 export class Input {

@@ -20,6 +20,7 @@ export class Player {
   private moveX = 0;
   private wantJump = false;
   private wantProneToggle = false;
+  private controlLockTimer = 0;
 
   constructor(engine: Engine, x: number, y: number) {
     this.engine = engine;
@@ -70,11 +71,28 @@ export class Player {
     if (input.consumePressed('prone')) this.wantProneToggle = true;
   }
 
+  // くしゃみ等で吹き飛ばされる(しばらく操作不能になる)
+  applyBlow(vxPxPerSec: number, vyPxPerSec: number): void {
+    Body.setVelocity(this.body, {
+      x: this.body.velocity.x + vxPxPerSec / STEP_PER_SEC,
+      y: this.body.velocity.y + vyPxPerSec / STEP_PER_SEC,
+    });
+    this.grounded = false;
+    this.controlLockTimer = PARAMS.sneeze.controlLockSec;
+  }
+
   // 物理ステップ直前に呼ぶ
   physicsStep(): void {
     const p = PARAMS.player;
 
     if (this.hanging) {
+      this.wantJump = false;
+      this.wantProneToggle = false;
+      return;
+    }
+
+    if (this.controlLockTimer > 0) {
+      this.controlLockTimer -= 1 / STEP_PER_SEC;
       this.wantJump = false;
       this.wantProneToggle = false;
       return;
