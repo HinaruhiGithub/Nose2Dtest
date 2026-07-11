@@ -127,6 +127,24 @@ export const PARAMS = {
     grabRange: 90,
   },
 
+  ending: {
+    // ゲームオーバー: 鼻水が入り口から伸びて飛び出すまでの時間
+    snotOutSec: 1.5,
+    // ゲームオーバー: 飛び出した鼻水が漂う時間
+    snotFlySec: 1.1,
+    // ゲームオーバー: 口に吸い込まれる時間
+    swallowSec: 1.5,
+    // クリア: くしゃみ前の呼吸の間隔(回数はsneeze.breathCountと同じ)
+    breathIntervalSec: 0.55,
+    // クリア: 呼吸1回ごとに顔が上を向く角度
+    breathAngleStep: 0.09,
+    // クリア: 口から飛び出す初速(横・縦)
+    launchSpeedX: 900,
+    launchSpeedY: 780,
+    // 演出終了からUI表示までの時間
+    uiDelaySec: 1.0,
+  },
+
   camera: {
     // カメラの追従の滑らかさ(大きいほど機敏)
     followLerp: 5,

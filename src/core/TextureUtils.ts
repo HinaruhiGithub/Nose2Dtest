@@ -1,7 +1,17 @@
 import { Texture } from 'pixi.js';
 
+const cache = new Map<string, Texture>();
+
 // 緑背景(クロマキー)の画像を透過テクスチャとして読み込む
 export async function loadChromaKeyedTexture(url: string): Promise<Texture> {
+  const cached = cache.get(url);
+  if (cached) return cached;
+  const texture = await decodeChromaKeyed(url);
+  cache.set(url, texture);
+  return texture;
+}
+
+async function decodeChromaKeyed(url: string): Promise<Texture> {
   const img = new Image();
   img.src = url;
   await img.decode();

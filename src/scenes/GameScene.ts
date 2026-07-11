@@ -12,9 +12,8 @@ import { SneezeSystem } from '../game/SneezeSystem';
 import { LABEL_CEILING, LABEL_END_WALL, LABEL_FLOOR } from '../game/NoseCave';
 import { Plush } from '../game/Plush';
 import { HUD } from '../ui/HUD';
-import { ResultOverlay } from '../ui/ResultOverlay';
 import { isTouchDevice, TouchControls } from '../ui/TouchControls';
-import { TitleScene } from './TitleScene';
+import { EndingScene } from './EndingScene';
 
 const FIXED_DT = 1 / 60;
 
@@ -36,9 +35,7 @@ export class GameScene implements Scene {
   private plush!: Plush;
   private manager!: SceneManager;
   private state: 'playing' | 'cleared' | 'gameover' = 'playing';
-  private overlay: ResultOverlay | null = null;
   private touchControls: TouchControls | null = null;
-  private screen = { w: 0, h: 0 };
 
   private faceAngle = 0;
   private time = 0;
@@ -126,7 +123,9 @@ export class GameScene implements Scene {
       if (this.plush.pull(dtSec)) {
         this.player.pulling = false;
         this.state = 'cleared';
-        this.showResult('ゲームクリア!', 0xffe08a);
+        // gotoは現シーンを即座に破棄するため、以降の処理を続けてはいけない
+        void this.manager.goto(new EndingScene('clear'));
+        return;
       }
     }
     this.plush.update(dtSec, this.player.pulling);
@@ -134,7 +133,8 @@ export class GameScene implements Scene {
     // 鼻の入り口から外に出たらゲームオーバー
     if (this.state === 'playing' && this.player.body.position.x < 0) {
       this.state = 'gameover';
-      this.showResult('ゲームオーバー', 0xff8a8a);
+      void this.manager.goto(new EndingScene('gameover'));
+      return;
     }
 
     this.accumulator += dtSec;
@@ -260,17 +260,6 @@ export class GameScene implements Scene {
     }
   }
 
-  private showResult(title: string, titleColor: number): void {
-    this.overlay = new ResultOverlay({
-      title,
-      titleColor,
-      onRetry: () => void this.manager.goto(new GameScene()),
-      onTitle: () => void this.manager.goto(new TitleScene()),
-    });
-    this.overlay.resize(this.screen.w, this.screen.h);
-    this.container.addChild(this.overlay.view);
-  }
-
   private releaseHair(): void {
     this.grabbedHair = null;
     this.player.hanging = false;
@@ -312,10 +301,8 @@ export class GameScene implements Scene {
   }
 
   resize(width: number, height: number): void {
-    this.screen = { w: width, h: height };
     this.baseCenter = { x: width / 2, y: height / 2 };
     this.viewRotator.position.set(width / 2, height / 2);
-    this.overlay?.resize(width, height);
     this.touchControls?.resize(width, height);
   }
 }
