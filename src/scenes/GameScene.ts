@@ -102,10 +102,17 @@ export class GameScene implements Scene {
     this.faceAngle = this.sneeze.faceAngle(this.time);
 
     // 大くしゃみ: 主人公を入り口方向へ吹き飛ばす(掴まり中は耐える)
+    // 奥に進んでいるほど風が強くなる
     if (this.sneeze.blowFired) {
       this.sneeze.blowFired = false;
       if (!this.player.hanging) {
-        this.player.applyBlow(-this.sneeze.blowSpeed, -this.sneeze.blowSpeed * 0.12);
+        const progress = Math.max(
+          0,
+          Math.min(1, this.player.body.position.x / this.cave.shape.length),
+        );
+        const speed =
+          this.sneeze.blowSpeed * (1 + PARAMS.sneeze.blowDepthBonus * progress);
+        this.player.applyBlow(-speed, -speed * 0.12);
       }
     }
 

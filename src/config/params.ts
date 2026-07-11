@@ -33,7 +33,7 @@ export const PARAMS = {
     // 背景のヤギ顔(goatRight)の拡大率
     scale: 4,
     // 背景のヤギ顔の不透明度
-    alpha: 0.5,
+    alpha: 0.8,
     // 画面中央からの縦方向オフセット
     yOffset: -30,
   },
@@ -100,7 +100,9 @@ export const PARAMS = {
     // 呼吸1回ごとに顔が上を向く角度
     breathAngleStep: 0.06,
     // 大くしゃみで主人公に加わる入り口方向の速度
-    blowSpeed: 1400,
+    blowSpeed: 2800,
+    // 奥に進んでいるほど吹き飛びが速くなる係数(最奥で blowSpeed×(1+この値) になる)
+    blowDepthBonus: 1.0,
     // 吹き飛ばし直後に主人公の操作が効かなくなる時間
     controlLockSec: 0.6,
     // 大くしゃみ後にメーター運用を再開するまでの時間

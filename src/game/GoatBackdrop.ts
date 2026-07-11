@@ -19,8 +19,8 @@ export class GoatBackdrop {
     this.view.addChild(this.bg);
     void loadChromaKeyedTexture(goatRightUrl).then((tex) => {
       this.goat = new Sprite(tex);
-      // 奥にあるように暗く沈める
-      this.goat.tint = 0x9a7078;
+      // 奥にあるように少しだけ色を沈める
+      this.goat.tint = 0xdfc2c7;
       this.goat.alpha = PARAMS.backdrop.alpha;
       this.view.addChild(this.goat);
     });
