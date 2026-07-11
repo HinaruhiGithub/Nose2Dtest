@@ -25,6 +25,17 @@ export const PARAMS = {
     wallRestitution: 0.4,
     // 壁の柔らかさの見た目の押し込み量(描画上のへこみ)
     wallSquishVisual: 10,
+    // 鼻腔の周りの肉の描画上の厚み(この外側に背景のヤギ顔が見える)
+    fleshThickness: 200,
+  },
+
+  backdrop: {
+    // 背景のヤギ顔(goatRight)の拡大率
+    scale: 4,
+    // 背景のヤギ顔の不透明度
+    alpha: 0.5,
+    // 画面中央からの縦方向オフセット
+    yOffset: -30,
   },
 
   player: {

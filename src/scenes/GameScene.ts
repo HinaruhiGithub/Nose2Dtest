@@ -4,6 +4,7 @@ import { PARAMS } from '../config/params';
 import { Input } from '../core/Input';
 import type { Scene, SceneManager } from '../core/SceneManager';
 import { generateCave } from '../game/CaveGenerator';
+import { GoatBackdrop } from '../game/GoatBackdrop';
 import { NoseCave } from '../game/NoseCave';
 import { NoseHair, NoseHairField } from '../game/NoseHair';
 import { Player } from '../game/Player';
@@ -27,6 +28,7 @@ export class GameScene implements Scene {
   private engine!: Engine;
   private input = new Input();
   private cave!: NoseCave;
+  private backdrop!: GoatBackdrop;
   private player!: Player;
   private avatar = new PlayerAvatar();
   private hairField!: NoseHairField;
@@ -64,7 +66,9 @@ export class GameScene implements Scene {
     this.player = new Player(this.engine, startX, startY);
     this.world.addChild(this.avatar.view);
 
+    this.backdrop = new GoatBackdrop(this.cave.shape.length);
     this.viewRotator.addChild(this.world);
+    this.container.addChild(this.backdrop.view);
     this.container.addChild(this.viewRotator);
     this.container.addChild(this.hud.view);
 
@@ -163,6 +167,12 @@ export class GameScene implements Scene {
       }
     }
 
+    this.cave.updateSquish(
+      this.player.body.position.x,
+      this.player.body.position.y,
+      dtSec,
+    );
+
     const grabbable = this.grabbedHair
       ? null
       : this.hairField.nearestGrabbable(
@@ -187,6 +197,7 @@ export class GameScene implements Scene {
     this.camera.x += (this.player.body.position.x - this.camera.x) * lerp;
     this.camera.y += (this.player.body.position.y - this.camera.y) * lerp;
 
+    this.backdrop.update(this.camera.x, this.faceAngle, this.time);
     this.viewRotator.rotation = this.faceAngle;
     const zoom = PARAMS.camera.zoom;
     this.viewRotator.scale.set(zoom);
@@ -303,6 +314,7 @@ export class GameScene implements Scene {
   resize(width: number, height: number): void {
     this.baseCenter = { x: width / 2, y: height / 2 };
     this.viewRotator.position.set(width / 2, height / 2);
+    this.backdrop.resize(width, height);
     this.touchControls?.resize(width, height);
   }
 }
