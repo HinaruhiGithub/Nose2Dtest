@@ -103,6 +103,21 @@ export const PARAMS = {
     idleBreathPeriodSec: 3.5,
   },
 
+  prologue: {
+    // ヤギ舎でヤギがうろつく時間
+    barnSec: 2.6,
+    // ヤギが主人公に気づいてから歩き出すまでの時間
+    noticeSec: 0.9,
+    // ヤギが主人公へ歩み寄る時間
+    approachSec: 2.2,
+    // 主人公目線でヤギの顔が近づいてくる時間
+    povSec: 2.6,
+    // 鼻の吸い込み演出の時間
+    suctionSec: 2.4,
+    // 吸い込み後の暗転にかかる時間
+    blackoutSec: 0.9,
+  },
+
   plush: {
     // ぬいぐるみの耐久が満タンからゼロになるまでの引き抜き時間
     pullDurationSec: 6,

@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from 'pixi.js';
 import type { Scene, SceneManager } from '../core/SceneManager';
-import { GameScene } from './GameScene';
+import { PrologueScene } from './PrologueScene';
 
 export class TitleScene implements Scene {
   readonly container = new Container();
@@ -26,7 +26,7 @@ export class TitleScene implements Scene {
     this.container.addChild(this.bg, this.title, this.prompt);
     this.container.eventMode = 'static';
     this.container.once('pointerdown', () => {
-      void manager.goto(new GameScene());
+      void manager.goto(new PrologueScene());
     });
   }
 
